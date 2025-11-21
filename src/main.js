@@ -17,7 +17,7 @@ const config = {
       debug: false
     }
   },
-  scene: [Portada,Game,GameOver,Instrucciones] // Aquí registras la escena
+  scene: [Game,Portada,GameOver,Instrucciones] // Aquí registras la escena
 
 }
 const game = new Phaser.Game(config);
