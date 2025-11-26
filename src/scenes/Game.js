@@ -68,14 +68,14 @@ export default class Game extends Phaser.Scene {
             this.glup.play();
             //robot.setTint('0xff0000')
             this.puntos++
-            this.actualizarTexto()
+            this.actualizarHUD()
 
         }
         function tragarCubitosHielo(robot, hielo) {
             hielo.disableBody(true, true); // este es el cubito tocado
             this.glup.play();
             this.vidas--
-            this.actualizarTexto()
+            this.actualizarHUD()
         }
         //Creamos los cursores:
         this.cursors = this.input.keyboard.createCursorKeys();
@@ -91,7 +91,7 @@ export default class Game extends Phaser.Scene {
         });
 
 
-        this.actualizarTexto = () => {
+        this.actualizarHUD = () => {
             this.puntosVidas.setText(`Puntos: ${this.puntos}   Vidas: ${this.vidas} Tiempo: ${Math.floor(this.tiempo)} `);
             if (this.vidas <= 0 || this.tiempo <= 0) {
                 this.scene.start('GameOver')
@@ -103,13 +103,9 @@ export default class Game extends Phaser.Scene {
             }
         };
 
-        this.actualizarTexto();
+        this.actualizarHUD();
 
-        //// botonera
-       /*  createUIButtonSmall(this,100,this.game.config.height-40,"⏯️", ()=>{console.log('Parar')})
-        createUIButtonSmall(this,200,this.game.config.height-40,"ℹ️", ()=>{console.log('Parar')})
-        createUIButtonSmall(this,300,this.game.config.height-40,"🔊", ()=>{console.log('Parar')})
-       */
+     // botonera
       createBtn(this,100, this.game.config.height-40,"ℹ️",()=>{this.scene.start("Instrucciones")})
         
 
@@ -136,5 +132,6 @@ export default class Game extends Phaser.Scene {
         // el tiempo disminuye
         // this.tiempo= this.tiempo - 0.01
         this.tiempo -= delta / 1000
+        this.actualizarHUD();
     }
 }
