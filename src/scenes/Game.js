@@ -1,45 +1,124 @@
-import robot from "../assets/robot.svg"
+
 export default class Game extends Phaser.Scene {
     constructor() {
-        super("Game")
+        super("Game");
     }
-    preload() { 
-        this.load.image('robot',robot)
-    }
+    preload() { }
     create() {
-       
-        const walls = this.physics.add.staticGroup();
         const mapa = [
             "################",
-            "#..............#",
-            "#.##############",
-            "#..............#",
-            "#.##############",
-            "#..............#",
-            "#..............#",
+            "#1...#..#..#..###",
+            "#.##.0.###.....#",
+            "#.##.#...0...###",
+            "##.....#####...#",
+            "#..###.......###",
+            "#..0...###.....#",
             "################"
         ];
         const tileW = this.scale.width / mapa[0].length;
         const tileH = this.scale.height / mapa.length;
+        // Guardamos grupos en la escena
+        this.walls = this.physics.add.staticGroup();
+        this.tuercas = this.physics.add.staticGroup();
+        this.cubitoshielo = this.physics.add.staticGroup();
         mapa.forEach((fila, y) => {
             fila.split("").forEach((c, x) => {
-                if (c === "#") {
-                    const wall = this.add.rectangle(
-                        x * tileW + tileW / 2,
-                        y * tileH + tileH / 2,
-                        tileW,
-                        tileH,
-                        0xff0000
-                    );
-                    this.physics.add.existing(wall, true);
-                    walls.add(wall);
+                const px = x * tileW + tileW / 2;
+                const py = y * tileH + tileH / 2;
+                switch (c) {
+                    case "#": {
+                        const wall = this.add.rectangle(px, py, tileW, tileH, 0xE7CCEB);
+                        this.walls.add(wall); // ya crea body estático
+                        break;
+                    }
+                    case ".": {
+                        const tuerca = this.tuercas.create(px, py, 'tuerca').setScale(0.1);
+                        tuerca.body.setCircle(8);
+                        tuerca.refreshBody();
+                        break;
+                    }
+                    case "0": {
+                        const cbt = this.cubitoshielo.create(px, py, 'cubito').setScale(0.2);
+                        cbt.body.setCircle(8);
+                        cbt.refreshBody();
+                        break;
+                    }
+                    case "1": {
+                        // Un solo robot
+                        this.robot = this.physics.add.sprite(px, py, 'robot');
+                        this.robot.setScale(0.37);
+                        break;
+                    }
                 }
             });
         });
-        // colocamos el robot
-        this.robot = this.add.image(400,300,"robot").setScale(0.5)
-       
+        // Colisiones de las paredes con las tuercas,robots y los cubitos de hielo:
+        this.physics.add.collider(this.robot, this.walls);
+        this.physics.add.collider(this.tuercas, this.walls);
+        this.physics.add.collider(this.cubitoshielo, this.walls);
+        this.physics.add.overlap(this.robot, this.tuercas, tragarTuercas, null, this);
+        this.physics.add.overlap(this.robot, this.cubitoshielo, tragarCubitosHielo, null, this);
+        this.glup = this.sound.add('glup')
+
+        function tragarTuercas(robot, tuerca) {
+            tuerca.disableBody(true, true); // esta es la tuerca tocada
+            this.glup.play();
+            //robot.setTint('0xff0000')
+            this.puntos++
+            this.actualizarTexto()
+
+        }
+        function tragarCubitosHielo(robot, hielo) {
+            hielo.disableBody(true, true); // este es el cubito tocado
+            this.glup.play();
+            this.vidas--
+            this.actualizarTexto()
+        }
+        //Creamos los cursores:
+        this.cursors = this.input.keyboard.createCursorKeys();
+        //puntos y vidas
+        // HUD
+        this.puntos = 0;
+        this.vidas = 2;
+        this.tiempo=60;
+
+        this.puntosVidas = this.add.text(10, 10, "", {
+            color: "maroon",
+            fontSize: 32
+        });
+
+
+        this.actualizarTexto = () => {
+            this.puntosVidas.setText(`Puntos: ${this.puntos}   Vidas: ${this.vidas} Tiempo: ${Math.floor(this.tiempo)} `);
+            if (this.vidas <= 0||this.tiempo<=0) {
+                this.scene.start('GameOver')
+
+            }
+        };
+
+        this.actualizarTexto();
+
+
 
     }
-    update() { }
+    update(time, delta) {
+        const speed = 160;
+        // Resetear velocidad cada frame
+        this.robot.setVelocity(0);
+        if (this.cursors.left.isDown) {
+            this.robot.setVelocityX(-speed);
+        }
+        else if (this.cursors.right.isDown) {
+            this.robot.setVelocityX(speed);
+        }
+        if (this.cursors.up.isDown) {
+            this.robot.setVelocityY(-speed);
+        }
+        else if (this.cursors.down.isDown) {
+            this.robot.setVelocityY(speed);
+        }
+        // el tiempo disminuye
+        // this.tiempo= this.tiempo - 0.01
+        this.tiempo-=delta/1000
+    }
 }

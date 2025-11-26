@@ -1,6 +1,6 @@
 import './style.css'
 import Phaser from 'phaser'
-
+import Preload from './scenes/Preload';
 import GameOver from './scenes/GameOver';
 import Instrucciones from './scenes/Instrucciones';
 import Portada from './scenes/Portada';
@@ -13,11 +13,11 @@ const config = {
    physics: {
     default: "arcade",
     arcade: {
-      gravity: { y: 300 },
+      gravity: { y: 0 },
       debug: false
     }
   },
-  scene: [Game,Portada,GameOver,Instrucciones] // Aquí registras la escena
+  scene: [Preload,Portada,Game,GameOver,Instrucciones] // Aquí registras la escena
 
 }
 const game = new Phaser.Game(config);
