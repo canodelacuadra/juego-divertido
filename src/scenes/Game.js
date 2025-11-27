@@ -20,6 +20,8 @@ export default class Game extends Phaser.Scene {
         this.physics.add.overlap(this.robot, this.tuercas, tragarTuercas, null, this);
         this.physics.add.overlap(this.robot, this.cubitoshielo, tragarCubitosHielo, null, this);
         this.glup = this.sound.add('glup')
+        this.pedo = this.sound.add('pedo')
+        this.boom = this.sound.add('boom')
 
         function tragarTuercas(robot, tuerca) {
             tuerca.disableBody(true, true); // esta es la tuerca tocada
@@ -30,8 +32,9 @@ export default class Game extends Phaser.Scene {
 
         }
         function tragarCubitosHielo(robot, hielo) {
-            hielo.disableBody(true, true); // este es el cubito tocado
-            this.glup.play();
+            hielo.disableBody(true, true); // este es el cubito tocado+
+            //robot.setTint(0x0000ff)
+            this.pedo.play();
             this.vidas--
             this.actualizarHUD()
         }
@@ -40,7 +43,7 @@ export default class Game extends Phaser.Scene {
         //puntos y vidas
         // HUD
         this.puntos = 0;
-        this.vidas = 1;
+        this.vidas = 3;
         this.tiempo = 120;
 
         this.puntosVidas = this.add.text(10, 10, "", {
@@ -48,10 +51,12 @@ export default class Game extends Phaser.Scene {
             fontSize: 32
         });
 
-
         this.actualizarHUD = () => {
-            this.puntosVidas.setText(`Puntos: ${this.puntos}   Vidas: ${this.vidas} Tiempo: ${Math.floor(this.tiempo)} `);
+            const emoji = "🤖"; // el emoji que quieras
+           const vidasEmoji = emoji.repeat(this.vidas);
+            this.puntosVidas.setText(`Puntos: ${this.puntos}   Vidas: ${vidasEmoji} Tiempo: ${Math.floor(this.tiempo)} `);
             if (this.vidas <= 0 || this.tiempo <= 0) {
+                this.boom.play()
                 this.scene.start('GameOver')
 
             }

@@ -1,3 +1,4 @@
+import { createBtn } from "../utilidades/Btn";
 export default class Instrucciones extends Phaser.Scene {
     constructor() {
         super("Instrucciones")
@@ -47,6 +48,25 @@ export default class Instrucciones extends Phaser.Scene {
             align:"left"
         }
         this.add.text(400,300,instrucciones,style).setOrigin(0.5)
+        /// botonera inferior
+           // --- BOTÓN Ir a Portada ---
+        this.bPortada = createBtn(
+            this,
+            200,
+            this.game.config.height - 40,
+            "🏃 ",
+            () => { this.scene.start('Portada'); }
+        );
+
+        // --- BOTÓN REANUDAR ---
+        this.bResume = createBtn(
+            this,
+            300,
+            this.game.config.height - 40,
+            "▶️",
+            () => { this.scene.start('Game') }
+        );
+
         
     }
      update(time,delta){
