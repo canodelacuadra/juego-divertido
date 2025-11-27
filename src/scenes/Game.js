@@ -4,7 +4,7 @@ export default class Game extends Phaser.Scene {
     constructor() {
         super("Game");
     }
-  
+
     preload() { }
     create() {
         const mapa = [
@@ -23,7 +23,7 @@ export default class Game extends Phaser.Scene {
         this.walls = this.physics.add.staticGroup();
         this.tuercas = this.physics.add.staticGroup();
         this.cubitoshielo = this.physics.add.staticGroup();
-        
+
         mapa.forEach((fila, y) => {
             fila.split("").forEach((c, x) => {
                 const px = x * tileW + tileW / 2;
@@ -97,41 +97,91 @@ export default class Game extends Phaser.Scene {
                 this.scene.start('GameOver')
 
             }
-            if(this.walls.length==0){
-                this.add.text( 100,100,"Ganaste Campeon",{})
-
+            if (this.tuercas.countActive(true) === 0) {
+                this.add.text(this.game.config.width * 0.5, this.game.config.height * 0.5, "¡Ganaste campeón!", {
+                    color: "red",
+                    fontSize: 64
+                }).setOrigin(0.5);
+                this.scene.pause();     // 🔥 Pausar escena
+                this.physics.pause();   // 🔥 Congelar físicas
             }
         };
 
         this.actualizarHUD();
 
-     // botonera
-      createBtn(this,100, this.game.config.height-40,"ℹ️",()=>{this.scene.start("Instrucciones")})
+        // botonera
+        createBtn(this, 100, this.game.config.height - 40, "ℹ️", () => { this.scene.start("Instrucciones") })
+
+        this.paused = false;  // estado inicial
+
+        // --- BOTÓN PAUSAR ---
+        this.bPause = createBtn(
+            this,
+            200,
+            this.game.config.height - 40,
+            "⏸️",
+            () => { this.activarPausa(); }
+        );
+
+        // --- BOTÓN REANUDAR ---
+        this.bResume = createBtn(
+            this,
+            300,
+            this.game.config.height - 40,
+            "▶️",
+            () => { this.desactivarPausa(); }
+        );
+
+        
+
+        // Colores iniciales
+        this.bPause.setColor(0x00CC44);
+        this.bResume.setColor(0x0066220);
         
 
 
 
 
+
+
     }
+    activarPausa() {
+        if (this.paused) return;
+
+        this.paused = true;
+        this.physics.pause();
+
+        // tiempo queda congelado
+        // update deja de mover al robot
+        this.bPause.setColor(0x0066220); // 
+        this.bResume.setColor(0x00CC44); // 
+    }
+
+    desactivarPausa() {
+        if (!this.paused) return;
+
+        this.paused = false;
+        this.physics.resume();
+
+        this.bPause.setColor(0x00CC44);
+        this.bResume.setColor(0x0066220); // verde
+    }
+
     update(time, delta) {
+
+        if (this.paused) return;  // 🔥 Detiene movimiento y tiempo
+
         const speed = 160;
-        // Resetear velocidad cada frame
         this.robot.setVelocity(0);
-        if (this.cursors.left.isDown) {
-            this.robot.setVelocityX(-speed);
-        }
-        else if (this.cursors.right.isDown) {
-            this.robot.setVelocityX(speed);
-        }
-        if (this.cursors.up.isDown) {
-            this.robot.setVelocityY(-speed);
-        }
-        else if (this.cursors.down.isDown) {
-            this.robot.setVelocityY(speed);
-        }
-        // el tiempo disminuye
-        // this.tiempo= this.tiempo - 0.01
-        this.tiempo -= delta / 1000
+
+        if (this.cursors.left.isDown) this.robot.setVelocityX(-speed);
+        else if (this.cursors.right.isDown) this.robot.setVelocityX(speed);
+
+        if (this.cursors.up.isDown) this.robot.setVelocityY(-speed);
+        else if (this.cursors.down.isDown) this.robot.setVelocityY(speed);
+
+        this.tiempo -= delta / 1000;
+
         this.actualizarHUD();
     }
 }
