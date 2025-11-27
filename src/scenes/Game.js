@@ -1,4 +1,5 @@
-import { createUIButtonSmall } from "../utilidades/Botones";
+import { construirTablero } from "../utilidades/construirTablero";
+import mapas from "../utilidades/mapas.json"
 import { createBtn } from "../utilidades/Btn";
 export default class Game extends Phaser.Scene {
     constructor() {
@@ -7,54 +8,11 @@ export default class Game extends Phaser.Scene {
 
     preload() { }
     create() {
-        const mapa = [
-            "################",
-            "#1...#..#..#..###",
-            "#.##.0.###.....#",
-            "#.##.#...0...###",
-            "##.....#####...#",
-            "#..###.......###",
-            "#..0...###.....#",
-            "################"
-        ];
-        const tileW = this.game.config.width / mapa[0].length;
-        const tileH = this.game.config.height / mapa.length;
-        // Guardamos grupos en la escena
-        this.walls = this.physics.add.staticGroup();
-        this.tuercas = this.physics.add.staticGroup();
-        this.cubitoshielo = this.physics.add.staticGroup();
-
-        mapa.forEach((fila, y) => {
-            fila.split("").forEach((c, x) => {
-                const px = x * tileW + tileW / 2;
-                const py = y * tileH + tileH / 2;
-                switch (c) {
-                    case "#": {
-                        const wall = this.add.rectangle(px, py, tileW, tileH, 0xE7CCEB);
-                        this.walls.add(wall); // ya crea body estático
-                        break;
-                    }
-                    case ".": {
-                        const tuerca = this.tuercas.create(px, py, 'tuerca').setScale(0.1);
-                        tuerca.body.setCircle(8);
-                        tuerca.refreshBody();
-                        break;
-                    }
-                    case "0": {
-                        const cbt = this.cubitoshielo.create(px, py, 'cubito').setScale(0.2);
-                        cbt.body.setCircle(8);
-                        cbt.refreshBody();
-                        break;
-                    }
-                    case "1": {
-                        // Un solo robot
-                        this.robot = this.physics.add.sprite(px, py, 'robot');
-                        this.robot.setScale(0.33);
-                        break;
-                    }
-                }
-            });
-        });
+// Mostramos un tablero aleatorio
+        const claves = Object.keys(mapas);      // ["mapa1", "mapa2", "mapa3"]
+        const aleatoria = claves[Math.floor(Math.random() * claves.length)];
+        const mapaSeleccionado = mapas[aleatoria];
+        construirTablero(this, mapaSeleccionado)
         // Colisiones de las paredes con las tuercas,robots y los cubitos de hielo:
         this.physics.add.collider(this.robot, this.walls);
         this.physics.add.collider(this.tuercas, this.walls);
@@ -102,8 +60,8 @@ export default class Game extends Phaser.Scene {
                     color: "red",
                     fontSize: 64
                 }).setOrigin(0.5);
-                this.scene.pause();     // 🔥 Pausar escena
-                this.physics.pause();   // 🔥 Congelar físicas
+                this.scene.pause();     // Pausar escena
+                this.physics.pause();   //  Congelar físicas
             }
         };
 
@@ -132,12 +90,12 @@ export default class Game extends Phaser.Scene {
             () => { this.desactivarPausa(); }
         );
 
-        
+
 
         // Colores iniciales
         this.bPause.setColor(0x00CC44);
         this.bResume.setColor(0x0066220);
-        
+
 
 
 
@@ -145,6 +103,7 @@ export default class Game extends Phaser.Scene {
 
 
     }
+
     activarPausa() {
         if (this.paused) return;
 
