@@ -1,4 +1,4 @@
-
+import { createMeteorito } from "../utilidades/createMeteorito";
 export default class Portada extends Phaser.Scene {
     constructor() {
         super("Portada")
@@ -49,15 +49,7 @@ export default class Portada extends Phaser.Scene {
         this.createUIButton(gameWidth / 2, gameHeight * 0.65, "Instrucciones", () => this.scene.start('Instrucciones'))
 
         // meteorito
-        this.meteorito = this.add.image(gameWidth - 20, 20, 'meteorito').setScale(0.8, 0.8)
-        this.tweens.add({
-            targets: this.meteorito,
-            x: 20,
-            y: gameHeight - 20,
-            repeat: -1,
-            duration: 5000
-
-        })
+        createMeteorito(this)
 
 
     }

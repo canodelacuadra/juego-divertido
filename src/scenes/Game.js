@@ -1,6 +1,7 @@
 import { construirTablero } from "../utilidades/construirTablero";
 import mapas from "../utilidades/mapas.json"
 import { createBtn } from "../utilidades/Btn";
+import { createMeteorito } from "../utilidades/createMeteorito";
 export default class Game extends Phaser.Scene {
     constructor() {
         super("Game");
@@ -52,6 +53,20 @@ export default class Game extends Phaser.Scene {
             color: "maroon",
             fontSize: 32
         });
+        // creamos meteorito y lo lanzamos
+         let num = Phaser.Math.Between(0, this.game.config.width);
+           createMeteorito(this, num)
+           this.physics.add.overlap(this.robot, this.meteorito, chocarMeteorito, null, this);
+
+       function chocarMeteorito(){
+        //this.robot.setTint(0x0000ff)
+          this.boom.play()
+         this.vidas--
+          this.meteorito.disableBody(true, true); 
+          this.actualizarHUD()
+          
+       }
+           
 
         this.actualizarHUD = () => {
             const emoji = "🤖"; // el emoji que quieras
@@ -62,6 +77,7 @@ export default class Game extends Phaser.Scene {
                 this.scene.start('GameOver')
 
             }
+          
             /* if(this.tiempo>=0&& this.vidas>=1 && this.tuercas.countActive(true) === 0 ){
                  construirTablero(this, mapaSeleccionado)
 
