@@ -10,6 +10,7 @@ import glup from "../assets/glup.mp3"
 import pedo from "../assets/pedo.mp3"
 import boom from "../assets/boom.mp3"
 
+
 export default class Preload extends Phaser.Scene {
     constructor() {
         super("Preload")

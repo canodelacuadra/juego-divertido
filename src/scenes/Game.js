@@ -8,10 +8,12 @@ export default class Game extends Phaser.Scene {
 
     preload() { }
     create() {
-// Mostramos un tablero aleatorio
-        const claves = Object.keys(mapas);      // ["mapa1", "mapa2", "mapa3"]
+        // Mostramos un tablero aleatorio
+        const claves = Object.keys(mapas);      // ["mapa1", "mapa2", "mapa3","jose","elisa"]
         const aleatoria = claves[Math.floor(Math.random() * claves.length)];
+        
         const mapaSeleccionado = mapas[aleatoria];
+        // construimos el laberinto
         construirTablero(this, mapaSeleccionado)
         // Colisiones de las paredes con las tuercas,robots y los cubitos de hielo:
         this.physics.add.collider(this.robot, this.walls);
@@ -60,6 +62,10 @@ export default class Game extends Phaser.Scene {
                 this.scene.start('GameOver')
 
             }
+            /* if(this.tiempo>=0&& this.vidas>=1 && this.tuercas.countActive(true) === 0 ){
+                 construirTablero(this, mapaSeleccionado)
+
+            } */
             if (this.tuercas.countActive(true) === 0) {
                 this.add.text(this.game.config.width * 0.5, this.game.config.height * 0.5, "¡Ganaste campeón!", {
                     color: "red",
@@ -99,13 +105,7 @@ export default class Game extends Phaser.Scene {
 
         // Colores iniciales
         this.bPause.setColor(0x00CC44);
-        this.bResume.setColor(0x0066220);
-
-
-
-
-
-
+        this.bResume.setColor(0x0066220)
 
     }
 

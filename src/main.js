@@ -7,6 +7,7 @@ import Portada from './scenes/Portada';
 import Game from './scenes/Game';
 const config = {
   type: Phaser.AUTO,
+  parent:document.getElementById('container'),
   backgroundColor: "#333",
   width: 800,
   height: 600,
@@ -29,7 +30,12 @@ const config = {
         height: 900
     }
     },
+    title:"El cometuercas",
+    version:"1.0",
   scene: [Preload,Portada,Game,GameOver,Instrucciones] // Aquí registras la escena
 
 }
-const game = new Phaser.Game(config);
+document.fonts.load("16px fuenteNova").then(() => {
+    // Iniciar Phaser aquí
+    const game = new Phaser.Game(config);
+});

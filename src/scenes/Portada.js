@@ -29,6 +29,7 @@ export default class Portada extends Phaser.Scene {
 
         /////// titulo
         this.title = this.add.text(gameWidth * 0.5, gameHeight * 0.25, "Juego Divertido", {
+            fontFamily:"fuenteNova",
             fontSize: "64px",
             fill: "#efefef"
         }).setOrigin(0.5)
